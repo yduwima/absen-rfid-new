@@ -174,7 +174,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Hari <span class="text-red-500">*</span></label>
                 <select name="hari" id="hari" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">Pilih Hari</option>
-                    <?php foreach ($hari_list as $h): ?>
+                    <?php 
+                    $hari_options = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    foreach ($hari_options as $h): 
+                    ?>
                         <option value="<?php echo $h; ?>"><?php echo $h; ?></option>
                     <?php endforeach; ?>
                 </select>
