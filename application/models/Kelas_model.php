@@ -21,6 +21,42 @@ class Kelas_model extends Base_Model {
     }
     
     /**
+     * Get all kelas with pagination
+     */
+    public function get_all_with_wali($search = null, $limit = null, $offset = null) {
+        $this->db->select('kelas.*, guru.nama as wali_kelas_nama, COUNT(siswa.id) as jumlah_siswa');
+        $this->db->from($this->table);
+        $this->db->join('guru', 'guru.id = kelas.wali_kelas_id', 'left');
+        $this->db->join('siswa', 'siswa.kelas_id = kelas.id AND siswa.status = "aktif"', 'left');
+        
+        if ($search) {
+            $this->db->like('kelas.nama_kelas', $search);
+        }
+        
+        $this->db->group_by('kelas.id');
+        $this->db->order_by('kelas.tingkat, kelas.nama_kelas', 'ASC');
+        
+        if ($limit) {
+            $this->db->limit($limit, $offset);
+        }
+        
+        return $this->db->get()->result();
+    }
+    
+    /**
+     * Count all kelas with filters
+     */
+    public function count_all($search = null) {
+        $this->db->from($this->table);
+        
+        if ($search) {
+            $this->db->like('nama_kelas', $search);
+        }
+        
+        return $this->db->count_all_results();
+    }
+    
+    /**
      * Get kelas by tingkat
      */
     public function get_by_tingkat($tingkat) {

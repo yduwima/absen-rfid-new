@@ -77,6 +77,44 @@ class Guru_model extends Base_Model {
     }
     
     /**
+     * Get all guru with pagination
+     */
+    public function get_all($search = null, $limit = null, $offset = null) {
+        $this->db->from($this->table);
+        
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('nama', $search);
+            $this->db->or_like('nip', $search);
+            $this->db->group_end();
+        }
+        
+        $this->db->order_by('nama', 'ASC');
+        
+        if ($limit) {
+            $this->db->limit($limit, $offset);
+        }
+        
+        return $this->db->get()->result();
+    }
+    
+    /**
+     * Count all guru with filters
+     */
+    public function count_all($search = null) {
+        $this->db->from($this->table);
+        
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('nama', $search);
+            $this->db->or_like('nip', $search);
+            $this->db->group_end();
+        }
+        
+        return $this->db->count_all_results();
+    }
+    
+    /**
      * Get guru aktif
      */
     public function get_aktif() {

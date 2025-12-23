@@ -21,6 +21,44 @@ class Mapel_model extends Base_Model {
     }
     
     /**
+     * Get all mapel with pagination
+     */
+    public function get_all($search = null, $limit = null, $offset = null) {
+        $this->db->from($this->table);
+        
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('nama_mapel', $search);
+            $this->db->or_like('kode_mapel', $search);
+            $this->db->group_end();
+        }
+        
+        $this->db->order_by('nama_mapel', 'ASC');
+        
+        if ($limit) {
+            $this->db->limit($limit, $offset);
+        }
+        
+        return $this->db->get()->result();
+    }
+    
+    /**
+     * Count all mapel with filters
+     */
+    public function count_all($search = null) {
+        $this->db->from($this->table);
+        
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('nama_mapel', $search);
+            $this->db->or_like('kode_mapel', $search);
+            $this->db->group_end();
+        }
+        
+        return $this->db->count_all_results();
+    }
+    
+    /**
      * Check if kode exists
      */
     public function kode_exists($kode, $exclude_id = null) {

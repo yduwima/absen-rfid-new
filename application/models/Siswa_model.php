@@ -109,6 +109,56 @@ class Siswa_model extends Base_Model {
     }
     
     /**
+     * Get all siswa with kelas and pagination
+     */
+    public function get_all_with_kelas($search = null, $kelas_id = null, $limit = null, $offset = null) {
+        $this->db->select('siswa.*, kelas.nama_kelas as nama_kelas');
+        $this->db->from($this->table);
+        $this->db->join('kelas', 'kelas.id = siswa.kelas_id', 'left');
+        
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('siswa.nama', $search);
+            $this->db->or_like('siswa.nis', $search);
+            $this->db->or_like('siswa.nisn', $search);
+            $this->db->group_end();
+        }
+        
+        if ($kelas_id) {
+            $this->db->where('siswa.kelas_id', $kelas_id);
+        }
+        
+        $this->db->order_by('siswa.nama', 'ASC');
+        
+        if ($limit) {
+            $this->db->limit($limit, $offset);
+        }
+        
+        return $this->db->get()->result();
+    }
+    
+    /**
+     * Count all siswa with filters
+     */
+    public function count_all($search = null, $kelas_id = null) {
+        $this->db->from($this->table);
+        
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('nama', $search);
+            $this->db->or_like('nis', $search);
+            $this->db->or_like('nisn', $search);
+            $this->db->group_end();
+        }
+        
+        if ($kelas_id) {
+            $this->db->where('kelas_id', $kelas_id);
+        }
+        
+        return $this->db->count_all_results();
+    }
+    
+    /**
      * Naik kelas
      */
     public function naik_kelas($kelas_lama_id, $kelas_baru_id) {
