@@ -713,4 +713,317 @@ class Master extends CI_Controller {
         $jadwal = $this->Jadwal_model->get_by_id($id);
         echo json_encode($jadwal);
     }
+    
+    // =====================================================
+    // SISWA IMPORT/EXPORT
+    // =====================================================
+    
+    public function siswa_template() {
+        $this->load->library('excel');
+        
+        $headers = [
+            'NIS', 'NISN', 'Nama Lengkap', 'Jenis Kelamin', 
+            'Tempat Lahir', 'Tanggal Lahir', 'Alamat',
+            'Nama Orang Tua', 'No HP Orang Tua', 'Kelas', 
+            'UID RFID', 'Status'
+        ];
+        
+        $this->excel->create()
+                    ->setHeader($headers)
+                    ->autoSizeColumns()
+                    ->download('template_siswa.xlsx');
+    }
+    
+    public function siswa_export() {
+        $this->load->library('excel');
+        
+        // Get all students
+        $siswa = $this->Siswa_model->get_all_with_kelas(null, null, 10000, 0);
+        
+        $headers = [
+            'NIS', 'NISN', 'Nama Lengkap', 'Jenis Kelamin', 
+            'Tempat Lahir', 'Tanggal Lahir', 'Alamat',
+            'Nama Orang Tua', 'No HP Orang Tua', 'Kelas', 
+            'UID RFID', 'Status'
+        ];
+        
+        $data = [];
+        foreach ($siswa as $s) {
+            $data[] = [
+                $s->nis,
+                $s->nisn,
+                $s->nama,
+                $s->jenis_kelamin,
+                $s->tempat_lahir,
+                $s->tanggal_lahir,
+                $s->alamat,
+                $s->nama_ortu,
+                $s->no_hp_ortu,
+                $s->nama_kelas ?? '',
+                $s->uid_rfid,
+                $s->status
+            ];
+        }
+        
+        $this->excel->create()
+                    ->setHeader($headers)
+                    ->addData($data)
+                    ->autoSizeColumns()
+                    ->download('data_siswa_' . date('Y-m-d') . '.xlsx');
+    }
+    
+    public function siswa_import() {
+        if ($this->input->method() == 'post') {
+            $config['upload_path'] = './assets/uploads/temp/';
+            $config['allowed_types'] = 'xlsx|xls';
+            $config['max_size'] = 5120; // 5MB
+            $config['file_name'] = 'import_siswa_' . time();
+            
+            // Create temp directory if not exists
+            if (!is_dir('./assets/uploads/temp/')) {
+                mkdir('./assets/uploads/temp/', 0777, true);
+            }
+            
+            $this->load->library('upload', $config);
+            
+            if (!$this->upload->do_upload('file')) {
+                $this->session->set_flashdata('error', $this->upload->display_errors());
+                redirect('admin/master/siswa');
+                return;
+            }
+            
+            $upload_data = $this->upload->data();
+            $file_path = $upload_data['full_path'];
+            
+            // Load Excel library and read data
+            $this->load->library('excel');
+            $this->excel->load($file_path);
+            $data = $this->excel->getData();
+            
+            $success = 0;
+            $failed = 0;
+            $errors = [];
+            
+            foreach ($data as $index => $row) {
+                // Skip if all columns are empty
+                if (empty(array_filter($row))) continue;
+                
+                // Validate required fields
+                if (empty($row[0]) || empty($row[2])) {
+                    $failed++;
+                    $errors[] = 'Baris ' . ($index + 2) . ': NIS dan Nama harus diisi';
+                    continue;
+                }
+                
+                // Check duplicate NIS
+                if ($this->Siswa_model->get_by_nis($row[0])) {
+                    $failed++;
+                    $errors[] = 'Baris ' . ($index + 2) . ': NIS ' . $row[0] . ' sudah terdaftar';
+                    continue;
+                }
+                
+                // Get kelas_id from nama kelas
+                $kelas_id = null;
+                if (!empty($row[9])) {
+                    $kelas = $this->db->get_where('kelas', ['nama_kelas' => $row[9]])->row();
+                    if ($kelas) {
+                        $kelas_id = $kelas->id;
+                    }
+                }
+                
+                $siswa_data = [
+                    'nis' => $row[0],
+                    'nisn' => $row[1] ?? '',
+                    'nama' => $row[2],
+                    'jenis_kelamin' => $row[3] ?? 'L',
+                    'tempat_lahir' => $row[4] ?? '',
+                    'tanggal_lahir' => $row[5] ?? null,
+                    'alamat' => $row[6] ?? '',
+                    'nama_ortu' => $row[7] ?? '',
+                    'no_hp_ortu' => $row[8] ?? '',
+                    'kelas_id' => $kelas_id,
+                    'uid_rfid' => $row[10] ?? '',
+                    'foto' => 'default-avatar.png',
+                    'status' => $row[11] ?? 'aktif'
+                ];
+                
+                if ($this->Siswa_model->insert($siswa_data)) {
+                    $success++;
+                } else {
+                    $failed++;
+                    $errors[] = 'Baris ' . ($index + 2) . ': Gagal menyimpan data';
+                }
+            }
+            
+            // Delete uploaded file
+            unlink($file_path);
+            
+            // Set flash message
+            $message = "Import selesai: $success berhasil, $failed gagal";
+            if (!empty($errors)) {
+                $message .= '<br>Detail error:<br>' . implode('<br>', array_slice($errors, 0, 10));
+                if (count($errors) > 10) {
+                    $message .= '<br>... dan ' . (count($errors) - 10) . ' error lainnya';
+                }
+            }
+            
+            if ($failed > 0) {
+                $this->session->set_flashdata('warning', $message);
+            } else {
+                $this->session->set_flashdata('success', $message);
+            }
+            
+            redirect('admin/master/siswa');
+        }
+    }
+    
+    // =====================================================
+    // GURU IMPORT/EXPORT
+    // =====================================================
+    
+    public function guru_template() {
+        $this->load->library('excel');
+        
+        $headers = [
+            'NIP', 'Nama Lengkap', 'Jenis Kelamin', 
+            'Tempat Lahir', 'Tanggal Lahir', 'Email',
+            'No HP', 'Alamat', 'Jabatan', 'UID RFID', 'Status'
+        ];
+        
+        $this->excel->create()
+                    ->setHeader($headers)
+                    ->autoSizeColumns()
+                    ->download('template_guru.xlsx');
+    }
+    
+    public function guru_export() {
+        $this->load->library('excel');
+        
+        // Get all teachers
+        $guru = $this->Guru_model->get_all(null, 10000, 0);
+        
+        $headers = [
+            'NIP', 'Nama Lengkap', 'Jenis Kelamin', 
+            'Tempat Lahir', 'Tanggal Lahir', 'Email',
+            'No HP', 'Alamat', 'Jabatan', 'UID RFID', 'Status'
+        ];
+        
+        $data = [];
+        foreach ($guru as $g) {
+            $data[] = [
+                $g->nip,
+                $g->nama,
+                $g->jenis_kelamin,
+                $g->tempat_lahir,
+                $g->tanggal_lahir,
+                $g->email,
+                $g->no_hp,
+                $g->alamat,
+                $g->jabatan,
+                $g->uid_rfid,
+                $g->status
+            ];
+        }
+        
+        $this->excel->create()
+                    ->setHeader($headers)
+                    ->addData($data)
+                    ->autoSizeColumns()
+                    ->download('data_guru_' . date('Y-m-d') . '.xlsx');
+    }
+    
+    public function guru_import() {
+        if ($this->input->method() == 'post') {
+            $config['upload_path'] = './assets/uploads/temp/';
+            $config['allowed_types'] = 'xlsx|xls';
+            $config['max_size'] = 5120; // 5MB
+            $config['file_name'] = 'import_guru_' . time();
+            
+            // Create temp directory if not exists
+            if (!is_dir('./assets/uploads/temp/')) {
+                mkdir('./assets/uploads/temp/', 0777, true);
+            }
+            
+            $this->load->library('upload', $config);
+            
+            if (!$this->upload->do_upload('file')) {
+                $this->session->set_flashdata('error', $this->upload->display_errors());
+                redirect('admin/master/guru');
+                return;
+            }
+            
+            $upload_data = $this->upload->data();
+            $file_path = $upload_data['full_path'];
+            
+            // Load Excel library and read data
+            $this->load->library('excel');
+            $this->excel->load($file_path);
+            $data = $this->excel->getData();
+            
+            $success = 0;
+            $failed = 0;
+            $errors = [];
+            
+            foreach ($data as $index => $row) {
+                // Skip if all columns are empty
+                if (empty(array_filter($row))) continue;
+                
+                // Validate required fields
+                if (empty($row[0]) || empty($row[1])) {
+                    $failed++;
+                    $errors[] = 'Baris ' . ($index + 2) . ': NIP dan Nama harus diisi';
+                    continue;
+                }
+                
+                // Check duplicate NIP
+                if ($this->Guru_model->get_by_nip($row[0])) {
+                    $failed++;
+                    $errors[] = 'Baris ' . ($index + 2) . ': NIP ' . $row[0] . ' sudah terdaftar';
+                    continue;
+                }
+                
+                $guru_data = [
+                    'nip' => $row[0],
+                    'nama' => $row[1],
+                    'jenis_kelamin' => $row[2] ?? 'L',
+                    'tempat_lahir' => $row[3] ?? '',
+                    'tanggal_lahir' => $row[4] ?? null,
+                    'email' => $row[5] ?? '',
+                    'no_hp' => $row[6] ?? '',
+                    'alamat' => $row[7] ?? '',
+                    'jabatan' => $row[8] ?? 'Guru Mapel',
+                    'uid_rfid' => $row[9] ?? '',
+                    'foto' => 'default-avatar.png',
+                    'status' => $row[10] ?? 'aktif'
+                ];
+                
+                if ($this->Guru_model->insert($guru_data)) {
+                    $success++;
+                } else {
+                    $failed++;
+                    $errors[] = 'Baris ' . ($index + 2) . ': Gagal menyimpan data';
+                }
+            }
+            
+            // Delete uploaded file
+            unlink($file_path);
+            
+            // Set flash message
+            $message = "Import selesai: $success berhasil, $failed gagal";
+            if (!empty($errors)) {
+                $message .= '<br>Detail error:<br>' . implode('<br>', array_slice($errors, 0, 10));
+                if (count($errors) > 10) {
+                    $message .= '<br>... dan ' . (count($errors) - 10) . ' error lainnya';
+                }
+            }
+            
+            if ($failed > 0) {
+                $this->session->set_flashdata('warning', $message);
+            } else {
+                $this->session->set_flashdata('success', $message);
+            }
+            
+            redirect('admin/master/guru');
+        }
+    }
 }

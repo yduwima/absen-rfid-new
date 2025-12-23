@@ -28,6 +28,18 @@ $route['admin/pengaturan/jam_kerja'] = 'admin/pengaturan/jam_kerja';
 
 // Admin Master Data Routes
 $route['admin/master/siswa'] = 'admin/master/siswa';
+$route['admin/master/siswa/template'] = 'admin/master/siswa_template';
+$route['admin/master/siswa/export'] = 'admin/master/siswa_export';
+$route['admin/master/siswa/import'] = 'admin/master/siswa_import';
+$route['admin/master/siswa/add'] = 'admin/master/siswa_add';
+$route['admin/master/siswa/edit/(:num)'] = 'admin/master/siswa_edit/$1';
+$route['admin/master/siswa/delete/(:num)'] = 'admin/master/siswa_delete/$1';
+$route['admin/master/siswa/get/(:num)'] = 'admin/master/siswa_get/$1';
+
+$route['admin/master/guru'] = 'admin/master/guru';
+$route['admin/master/guru/template'] = 'admin/master/guru_template';
+$route['admin/master/guru/export'] = 'admin/master/guru_export';
+$route['admin/master/guru/import'] = 'admin/master/guru_import';
 $route['admin/master/siswa/add'] = 'admin/master/siswa_add';
 $route['admin/master/siswa/edit/(:num)'] = 'admin/master/siswa_edit/$1';
 $route['admin/master/siswa/delete/(:num)'] = 'admin/master/siswa_delete/$1';

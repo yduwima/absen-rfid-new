@@ -175,4 +175,18 @@ class Siswa_model extends Base_Model {
         $this->db->where('status', 'Aktif');
         return $this->db->update($this->table, array('status' => 'Lulus'));
     }
+    
+    /**
+     * Get siswa by NIS
+     */
+    public function get_by_nis($nis) {
+        return $this->db->get_where($this->table, ['nis' => $nis])->row();
+    }
+    
+    /**
+     * Get siswa by NISN
+     */
+    public function get_by_nisn($nisn) {
+        return $this->db->get_where($this->table, ['nisn' => $nisn])->row();
+    }
 }

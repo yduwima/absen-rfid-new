@@ -170,4 +170,11 @@ class Guru_model extends Base_Model {
         $this->db->where('guru_piket.is_active', 1);
         return $this->db->get()->result();
     }
+    
+    /**
+     * Get guru by NIP
+     */
+    public function get_by_nip($nip) {
+        return $this->db->get_where($this->table, ['nip' => $nip])->row();
+    }
 }

@@ -21,6 +21,12 @@
         </div>
         <?php endif; ?>
         
+        <?php if ($this->session->flashdata('warning')): ?>
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
+            <p><?php echo $this->session->flashdata('warning'); ?></p>
+        </div>
+        <?php endif; ?>
+        
         <!-- Actions Bar -->
         <div class="bg-white rounded-lg shadow-md p-4 mb-6">
             <div class="flex flex-wrap justify-between items-center gap-4">
@@ -49,6 +55,21 @@
                         <i class="fas fa-plus"></i>
                         <span>Tambah Siswa</span>
                     </button>
+                    
+                    <button onclick="openImportModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                        <i class="fas fa-file-import"></i>
+                        <span>Import Excel</span>
+                    </button>
+                    
+                    <a href="<?php echo base_url('admin/master/siswa/export'); ?>" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export Excel</span>
+                    </a>
+                    
+                    <a href="<?php echo base_url('admin/master/siswa/template'); ?>" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                        <i class="fas fa-download"></i>
+                        <span>Download Template</span>
+                    </a>
                     
                     <button onclick="alert('Fitur import akan segera hadir')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
                         <i class="fas fa-file-excel"></i>
@@ -355,12 +376,21 @@ function closeModal() {
     document.getElementById('siswaModal').classList.add('hidden');
 }
 
+function closeImportModal() {
+    document.getElementById('importModal').classList.add('hidden');
+}
+
+function openImportModal() {
+    document.getElementById('importModal').classList.remove('hidden');
+}
+
 function filterKelas(kelasId) {
     const url = new URL(window.location.href);
     url.searchParams.set('kelas_id', kelasId);
     url.searchParams.set('page', 1);
     window.location.href = url.toString();
 }
+
 
 function changePerPage(perPage) {
     const url = new URL(window.location.href);
@@ -376,3 +406,49 @@ document.getElementById('siswaModal').addEventListener('click', function(e) {
     }
 });
 </script>
+
+<!-- Import Modal -->
+<div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Import Data Siswa</h3>
+            <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <form action="<?php echo site_url('admin/master/siswa/import'); ?>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    File Excel (.xlsx)
+                </label>
+                <input type="file" name="file" accept=".xlsx,.xls" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <p class="text-sm text-gray-600 mt-2">
+                    <i class="fas fa-info-circle"></i> Format: xlsx/xls, Max: 5MB
+                </p>
+            </div>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                <p class="text-sm text-blue-700">
+                    <strong>Panduan Import:</strong><br>
+                    1. Download template Excel<br>
+                    2. Isi data sesuai kolom yang tersedia<br>
+                    3. Upload file yang sudah diisi<br>
+                    4. Sistem akan validasi otomatis
+                </p>
+            </div>
+            
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeImportModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-upload"></i> Upload & Import
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
