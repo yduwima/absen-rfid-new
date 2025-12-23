@@ -11,6 +11,7 @@ class Auth extends CI_Controller {
         parent::__construct();
         $this->load->model('User_model');
         $this->load->model('Guru_model');
+        $this->load->model('Pengaturan_model');
     }
     
     /**
@@ -23,7 +24,8 @@ class Auth extends CI_Controller {
             return;
         }
         
-        $this->load->view('auth/login');
+        $data['sekolah'] = $this->Pengaturan_model->get_pengaturan_sekolah();
+        $this->load->view('auth/login', $data);
     }
     
     /**

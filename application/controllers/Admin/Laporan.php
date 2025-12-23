@@ -20,12 +20,14 @@ class Laporan extends CI_Controller {
         $this->load->model('Siswa_model');
         $this->load->model('Guru_model');
         $this->load->model('Kelas_model');
+        $this->load->model('Pengaturan_model');
         $this->load->helper('app_helper');
     }
     
     // Laporan Absensi Siswa
     public function absensi_siswa() {
         $data['title'] = 'Laporan Absensi Siswa';
+        $data['sekolah'] = $this->Pengaturan_model->get_pengaturan_sekolah();
         
         // Get filters
         $bulan = $this->input->get('bulan') ?: date('Y-m');
@@ -52,6 +54,7 @@ class Laporan extends CI_Controller {
     // Laporan Absensi Guru
     public function absensi_guru() {
         $data['title'] = 'Laporan Absensi Guru';
+        $data['sekolah'] = $this->Pengaturan_model->get_pengaturan_sekolah();
         
         // Get filters
         $bulan = $this->input->get('bulan') ?: date('Y-m');
@@ -69,6 +72,7 @@ class Laporan extends CI_Controller {
     // Rekap Laporan Siswa
     public function rekap_siswa() {
         $data['title'] = 'Rekap Laporan Siswa';
+        $data['sekolah'] = $this->Pengaturan_model->get_pengaturan_sekolah();
         
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar');
