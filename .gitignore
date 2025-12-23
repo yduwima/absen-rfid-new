@@ -1,0 +1,47 @@
+.DS_Store
+.env
+
+application/cache/*
+!application/cache/index.html
+
+application/logs/*
+!application/logs/index.html
+
+!application/*/.htaccess
+
+composer.lock
+tests/mocks/database/ci_test.sqlite
+
+user_guide_src/build/*
+user_guide_src/cilexer/build/*
+user_guide_src/cilexer/dist/*
+user_guide_src/cilexer/pycilexer.egg-info/*
+/vendor/
+
+# IDE Files
+#-------------------------
+/nbproject/
+.idea/*
+
+## Sublime Text cache files
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+/tests/tests/
+/tests/results/
+
+# Node modules for Tailwind
+node_modules/
+
+# Build files
+assets/css/tailwind.css
+assets/uploads/*
+!assets/uploads/.gitkeep
+assets/img/logo/*
+!assets/img/logo/.gitkeep
+
+# Temporary files
+/tmp/*
+!tmp/.gitkeep
