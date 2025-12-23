@@ -47,7 +47,9 @@
                 <select onchange="changePerPage(this.value)" class="px-3 py-1 border border-gray-300 rounded">
                     <option value="10" <?php echo ($per_page == 10) ? 'selected' : ''; ?>>10</option>
                     <option value="20" <?php echo ($per_page == 20) ? 'selected' : ''; ?>>20</option>
+                    <option value="30" <?php echo ($per_page == 30) ? 'selected' : ''; ?>>30</option>
                     <option value="50" <?php echo ($per_page == 50) ? 'selected' : ''; ?>>50</option>
+                    <option value="100" <?php echo ($per_page == 100) ? 'selected' : ''; ?>>100</option>
                 </select>
                 <span class="text-sm text-gray-600">dari <?php echo $total; ?> data</span>
             </div>
@@ -59,13 +61,13 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tahun</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Semester</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Mulai</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Selesai</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tahun</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Mulai</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Selesai</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
