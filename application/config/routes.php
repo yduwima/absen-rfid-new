@@ -45,3 +45,4 @@ $route['piket/izin'] = 'piket/izin/index';
 $route['bk/dashboard'] = 'bk/dashboard/index';
 $route['bk/monitoring'] = 'bk/monitoring/index';
 $route['bk/surat'] = 'bk/surat/index';
+$route['bk/profile'] = 'bk/profile/index';
