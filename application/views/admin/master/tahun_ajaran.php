@@ -218,13 +218,28 @@ function editData(id) {
         .then(data => {
             document.getElementById('modalTitle').textContent = 'Edit Tahun Ajaran';
             document.getElementById('modalForm').action = '<?php echo base_url('admin/master/tahun_ajaran_edit/'); ?>' + id;
-            document.getElementById('tahun').value = data.tahun;
-            document.getElementById('semester').value = data.semester;
-            document.getElementById('tanggal_mulai').value = data.tanggal_mulai;
-            document.getElementById('tanggal_selesai').value = data.tanggal_selesai;
-            document.getElementById('status').value = data.status;
+            document.getElementById('tahun').value = escapeHtml(data.tahun || '');
+            document.getElementById('semester').value = escapeHtml(data.semester || '');
+            document.getElementById('tanggal_mulai').value = escapeHtml(data.tanggal_mulai || '');
+            document.getElementById('tanggal_selesai').value = escapeHtml(data.tanggal_selesai || '');
+            document.getElementById('status').value = escapeHtml(data.status || 'nonaktif');
             document.getElementById('modal').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memuat data. Silakan coba lagi.');
         });
+}
+
+function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text ? String(text).replace(/[&<>"']/g, function(m) { return map[m]; }) : '';
 }
 
 function closeModal() {

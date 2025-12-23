@@ -220,14 +220,29 @@ function editData(id) {
         .then(data => {
             document.getElementById('modalTitle').textContent = 'Edit Jadwal Pelajaran';
             document.getElementById('modalForm').action = '<?php echo base_url('admin/master/jadwal_edit/'); ?>' + id;
-            document.getElementById('kelas_id').value = data.kelas_id;
-            document.getElementById('mata_pelajaran_id').value = data.mata_pelajaran_id;
-            document.getElementById('guru_id').value = data.guru_id;
-            document.getElementById('hari').value = data.hari;
-            document.getElementById('jam_mulai').value = data.jam_mulai;
-            document.getElementById('jam_selesai').value = data.jam_selesai;
+            document.getElementById('kelas_id').value = escapeHtml(data.kelas_id || '');
+            document.getElementById('mata_pelajaran_id').value = escapeHtml(data.mata_pelajaran_id || '');
+            document.getElementById('guru_id').value = escapeHtml(data.guru_id || '');
+            document.getElementById('hari').value = escapeHtml(data.hari || '');
+            document.getElementById('jam_mulai').value = escapeHtml(data.jam_mulai || '');
+            document.getElementById('jam_selesai').value = escapeHtml(data.jam_selesai || '');
             document.getElementById('modal').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memuat data. Silakan coba lagi.');
         });
+}
+
+function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text ? String(text).replace(/[&<>"']/g, function(m) { return map[m]; }) : '';
 }
 
 function closeModal() {

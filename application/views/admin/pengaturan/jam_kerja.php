@@ -35,17 +35,17 @@
                     
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Jam Masuk</label>
-                        <input type="time" name="jam_masuk" value="<?php echo $jam_kerja->jam_masuk ?? '07:00'; ?>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <input type="time" name="jam_masuk" value="<?php echo isset($jam_kerja->jam_masuk) ? htmlspecialchars($jam_kerja->jam_masuk) : '07:00'; ?>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Jam Pulang</label>
-                        <input type="time" name="jam_pulang" value="<?php echo $jam_kerja->jam_pulang ?? '15:00'; ?>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <input type="time" name="jam_pulang" value="<?php echo isset($jam_kerja->jam_pulang) ? htmlspecialchars($jam_kerja->jam_pulang) : '15:00'; ?>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Toleransi Keterlambatan (menit)</label>
-                        <input type="number" name="toleransi_keterlambatan" value="<?php echo $jam_kerja->toleransi_keterlambatan ?? 15; ?>" required min="0" max="60" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <input type="number" name="toleransi_keterlambatan" value="<?php echo isset($jam_kerja->toleransi_keterlambatan) ? htmlspecialchars($jam_kerja->toleransi_keterlambatan) : '15'; ?>" required min="0" max="60" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
