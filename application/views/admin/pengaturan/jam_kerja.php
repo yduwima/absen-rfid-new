@@ -11,13 +11,13 @@
         <!-- Flash Messages -->
         <?php if ($this->session->flashdata('success')): ?>
         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
-            <p><?php echo $this->session->flashdata('success'); ?></p>
+            <p><?php echo htmlspecialchars($this->session->flashdata('success')); ?></p>
         </div>
         <?php endif; ?>
         
         <?php if ($this->session->flashdata('error')): ?>
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
-            <p><?php echo $this->session->flashdata('error'); ?></p>
+            <p><?php echo htmlspecialchars($this->session->flashdata('error')); ?></p>
         </div>
         <?php endif; ?>
         
@@ -31,6 +31,7 @@
                 </h3>
                 
                 <form method="POST" action="<?php echo base_url('admin/pengaturan/jam_kerja'); ?>">
+                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                     <input type="hidden" name="action" value="update_jam">
                     
                     <div class="mb-4">
@@ -63,6 +64,7 @@
                 </h3>
                 
                 <form method="POST" action="<?php echo base_url('admin/pengaturan/jam_kerja'); ?>">
+                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                     <input type="hidden" name="action" value="update_hari">
                     
                     <?php 
@@ -157,6 +159,7 @@
         <h3 class="text-lg font-semibold mb-4">Tambah Hari Libur</h3>
         
         <form method="POST" action="<?php echo base_url('admin/pengaturan/jam_kerja'); ?>">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
             <input type="hidden" name="action" value="tambah_libur">
             
             <div class="mb-4">

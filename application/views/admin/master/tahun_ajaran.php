@@ -11,13 +11,13 @@
         <!-- Flash Messages -->
         <?php if ($this->session->flashdata('success')): ?>
         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
-            <p><?php echo $this->session->flashdata('success'); ?></p>
+            <p><?php echo htmlspecialchars($this->session->flashdata('success')); ?></p>
         </div>
         <?php endif; ?>
         
         <?php if ($this->session->flashdata('error')): ?>
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
-            <p><?php echo $this->session->flashdata('error'); ?></p>
+            <p><?php echo htmlspecialchars($this->session->flashdata('error')); ?></p>
         </div>
         <?php endif; ?>
         
@@ -155,6 +155,8 @@
         <h3 id="modalTitle" class="text-lg font-semibold mb-4">Tambah Tahun Ajaran</h3>
         
         <form id="modalForm" method="POST">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+            
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Tahun <span class="text-red-500">*</span></label>
                 <input type="text" name="tahun" id="tahun" required placeholder="Contoh: 2024/2025" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
