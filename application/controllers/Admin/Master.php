@@ -20,6 +20,7 @@ class Master extends CI_Controller {
         $this->load->model('Guru_model');
         $this->load->model('Kelas_model');
         $this->load->model('Mapel_model');
+        $this->load->model('Tahun_ajaran_model');
         $this->load->helper('app_helper');
     }
     
@@ -348,7 +349,8 @@ class Master extends CI_Controller {
         $offset = ($page - 1) * $per_page;
         $data['kelas'] = $this->Kelas_model->get_all_with_wali($search, $per_page, $offset);
         $data['total'] = $this->Kelas_model->count_all($search);
-        $data['guru_list'] = $this->Guru_model->get_all();
+        $data['guru_list'] = $this->Guru_model->get_aktif();
+        $data['tahun_ajaran_list'] = $this->Tahun_ajaran_model->get_all();
         
         // Pagination
         $data['pagination'] = [
