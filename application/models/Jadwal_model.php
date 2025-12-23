@@ -89,4 +89,31 @@ class Jadwal_model extends Base_Model {
         
         return $this->get_by_guru($guru_id, $tahun_ajaran->id, $semester->id, $hari);
     }
+    
+    /**
+     * Get all jadwal with details
+     */
+    public function get_all_with_details($kelas_id = null, $hari = null) {
+        $this->db->select('jadwal_pelajaran.*, 
+            mata_pelajaran.nama_mapel,
+            guru.nama as nama_guru,
+            kelas.nama_kelas');
+        $this->db->from($this->table);
+        $this->db->join('mata_pelajaran', 'mata_pelajaran.id = jadwal_pelajaran.mata_pelajaran_id');
+        $this->db->join('guru', 'guru.id = jadwal_pelajaran.guru_id');
+        $this->db->join('kelas', 'kelas.id = jadwal_pelajaran.kelas_id');
+        
+        if ($kelas_id) {
+            $this->db->where('jadwal_pelajaran.kelas_id', $kelas_id);
+        }
+        
+        if ($hari) {
+            $this->db->where('jadwal_pelajaran.hari', $hari);
+        }
+        
+        $this->db->order_by('FIELD(jadwal_pelajaran.hari, "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu")');
+        $this->db->order_by('jadwal_pelajaran.jam_mulai');
+        
+        return $this->db->get()->result();
+    }
 }

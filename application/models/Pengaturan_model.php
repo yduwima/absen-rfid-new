@@ -14,15 +14,22 @@ class Pengaturan_model extends Base_Model {
     /**
      * Get pengaturan sekolah
      */
-    public function get_sekolah() {
+    public function get_pengaturan_sekolah() {
         return $this->db->get('pengaturan_sekolah')->row();
+    }
+    
+    /**
+     * Get sekolah (alias)
+     */
+    public function get_sekolah() {
+        return $this->get_pengaturan_sekolah();
     }
     
     /**
      * Update pengaturan sekolah
      */
-    public function update_sekolah($data) {
-        $exists = $this->get_sekolah();
+    public function update_pengaturan_sekolah($data) {
+        $exists = $this->get_pengaturan_sekolah();
         
         if ($exists) {
             $this->db->where('id', $exists->id);
@@ -30,6 +37,13 @@ class Pengaturan_model extends Base_Model {
         } else {
             return $this->db->insert('pengaturan_sekolah', $data);
         }
+    }
+    
+    /**
+     * Update sekolah (alias)
+     */
+    public function update_sekolah($data) {
+        return $this->update_pengaturan_sekolah($data);
     }
     
     /**
@@ -75,9 +89,17 @@ class Pengaturan_model extends Base_Model {
     /**
      * Update hari kerja
      */
-    public function update_hari_kerja($hari, $is_active) {
-        $this->db->where('hari', $hari);
-        return $this->db->update('hari_kerja', array('is_active' => $is_active));
+    public function update_hari_kerja($hari_aktif) {
+        // First, deactivate all
+        $this->db->update('hari_kerja', array('is_active' => 0));
+        
+        // Then activate selected days
+        if (!empty($hari_aktif)) {
+            $this->db->where_in('hari', $hari_aktif);
+            return $this->db->update('hari_kerja', array('is_active' => 1));
+        }
+        
+        return true;
     }
     
     /**
@@ -102,15 +124,29 @@ class Pengaturan_model extends Base_Model {
     /**
      * Add hari libur
      */
-    public function add_hari_libur($data) {
+    public function tambah_hari_libur($data) {
         return $this->db->insert('hari_libur', $data);
+    }
+    
+    /**
+     * Add hari libur (alias)
+     */
+    public function add_hari_libur($data) {
+        return $this->tambah_hari_libur($data);
     }
     
     /**
      * Delete hari libur
      */
-    public function delete_hari_libur($id) {
+    public function hapus_hari_libur($id) {
         return $this->db->delete('hari_libur', array('id' => $id));
+    }
+    
+    /**
+     * Delete hari libur (alias)
+     */
+    public function delete_hari_libur($id) {
+        return $this->hapus_hari_libur($id);
     }
     
     /**

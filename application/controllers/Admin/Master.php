@@ -21,6 +21,7 @@ class Master extends CI_Controller {
         $this->load->model('Kelas_model');
         $this->load->model('Mapel_model');
         $this->load->model('Tahun_ajaran_model');
+        $this->load->model('Jadwal_model');
         $this->load->helper('app_helper');
     }
     
@@ -519,5 +520,197 @@ class Master extends CI_Controller {
     public function mapel_get($id) {
         $mapel = $this->Mapel_model->get_by_id($id);
         echo json_encode($mapel);
+    }
+    
+    // =====================================================
+    // TAHUN AJARAN MANAGEMENT
+    // =====================================================
+    
+    public function tahun_ajaran() {
+        $data['title'] = 'Data Tahun Ajaran';
+        
+        // Get filters
+        $search = $this->input->get('search');
+        $per_page = $this->input->get('per_page') ?: 20;
+        $page = $this->input->get('page') ?: 1;
+        
+        // Get data
+        $offset = ($page - 1) * $per_page;
+        $data['tahun_ajaran'] = $this->Tahun_ajaran_model->get_all($search, $per_page, $offset);
+        $data['total'] = $this->Tahun_ajaran_model->count_all($search);
+        
+        // Pagination
+        $data['pagination'] = [
+            'total' => $data['total'],
+            'per_page' => $per_page,
+            'current_page' => $page,
+            'total_pages' => ceil($data['total'] / $per_page)
+        ];
+        
+        $data['search'] = $search;
+        $data['per_page'] = $per_page;
+        
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/topbar');
+        $this->load->view('templates/sidebar');
+        $this->load->view('admin/master/tahun_ajaran', $data);
+        $this->load->view('templates/footer');
+    }
+    
+    public function tahun_ajaran_add() {
+        if ($this->input->method() == 'post') {
+            $data = [
+                'tahun' => $this->input->post('tahun'),
+                'semester' => $this->input->post('semester'),
+                'tanggal_mulai' => $this->input->post('tanggal_mulai'),
+                'tanggal_selesai' => $this->input->post('tanggal_selesai'),
+                'status' => $this->input->post('status') ?: 'nonaktif'
+            ];
+            
+            // If set as active, deactivate others
+            if ($data['status'] == 'aktif') {
+                $this->Tahun_ajaran_model->deactivate_all();
+            }
+            
+            if ($this->Tahun_ajaran_model->insert($data)) {
+                $this->session->set_flashdata('success', 'Data tahun ajaran berhasil ditambahkan');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menambahkan data tahun ajaran');
+            }
+            
+            redirect('admin/master/tahun_ajaran');
+        }
+        
+        echo json_encode(['error' => 'Invalid request']);
+    }
+    
+    public function tahun_ajaran_edit($id) {
+        if ($this->input->method() == 'post') {
+            $data = [
+                'tahun' => $this->input->post('tahun'),
+                'semester' => $this->input->post('semester'),
+                'tanggal_mulai' => $this->input->post('tanggal_mulai'),
+                'tanggal_selesai' => $this->input->post('tanggal_selesai'),
+                'status' => $this->input->post('status')
+            ];
+            
+            // If set as active, deactivate others
+            if ($data['status'] == 'aktif') {
+                $this->Tahun_ajaran_model->deactivate_all();
+            }
+            
+            if ($this->Tahun_ajaran_model->update($id, $data)) {
+                $this->session->set_flashdata('success', 'Data tahun ajaran berhasil diupdate');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal mengupdate data tahun ajaran');
+            }
+            
+            redirect('admin/master/tahun_ajaran');
+        }
+        
+        echo json_encode(['error' => 'Invalid request']);
+    }
+    
+    public function tahun_ajaran_delete($id) {
+        if ($this->Tahun_ajaran_model->delete($id)) {
+            $this->session->set_flashdata('success', 'Data tahun ajaran berhasil dihapus');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menghapus data tahun ajaran');
+        }
+        
+        redirect('admin/master/tahun_ajaran');
+    }
+    
+    public function tahun_ajaran_get($id) {
+        $tahun_ajaran = $this->Tahun_ajaran_model->get_by_id($id);
+        echo json_encode($tahun_ajaran);
+    }
+    
+    // =====================================================
+    // JADWAL PELAJARAN MANAGEMENT
+    // =====================================================
+    
+    public function jadwal() {
+        $data['title'] = 'Jadwal Pelajaran';
+        
+        // Get filters
+        $kelas_id = $this->input->get('kelas_id');
+        $hari = $this->input->get('hari');
+        
+        // Get data
+        $data['jadwal'] = $this->Jadwal_model->get_all_with_details($kelas_id, $hari);
+        $data['kelas_list'] = $this->Kelas_model->get_all();
+        $data['guru_list'] = $this->Guru_model->get_all();
+        $data['mapel_list'] = $this->Mapel_model->get_all();
+        
+        $data['kelas_id'] = $kelas_id;
+        $data['hari'] = $hari;
+        
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/topbar');
+        $this->load->view('templates/sidebar');
+        $this->load->view('admin/master/jadwal', $data);
+        $this->load->view('templates/footer');
+    }
+    
+    public function jadwal_add() {
+        if ($this->input->method() == 'post') {
+            $data = [
+                'kelas_id' => $this->input->post('kelas_id'),
+                'mata_pelajaran_id' => $this->input->post('mata_pelajaran_id'),
+                'guru_id' => $this->input->post('guru_id'),
+                'hari' => $this->input->post('hari'),
+                'jam_mulai' => $this->input->post('jam_mulai'),
+                'jam_selesai' => $this->input->post('jam_selesai')
+            ];
+            
+            if ($this->Jadwal_model->insert($data)) {
+                $this->session->set_flashdata('success', 'Jadwal pelajaran berhasil ditambahkan');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menambahkan jadwal pelajaran');
+            }
+            
+            redirect('admin/master/jadwal');
+        }
+        
+        echo json_encode(['error' => 'Invalid request']);
+    }
+    
+    public function jadwal_edit($id) {
+        if ($this->input->method() == 'post') {
+            $data = [
+                'kelas_id' => $this->input->post('kelas_id'),
+                'mata_pelajaran_id' => $this->input->post('mata_pelajaran_id'),
+                'guru_id' => $this->input->post('guru_id'),
+                'hari' => $this->input->post('hari'),
+                'jam_mulai' => $this->input->post('jam_mulai'),
+                'jam_selesai' => $this->input->post('jam_selesai')
+            ];
+            
+            if ($this->Jadwal_model->update($id, $data)) {
+                $this->session->set_flashdata('success', 'Jadwal pelajaran berhasil diupdate');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal mengupdate jadwal pelajaran');
+            }
+            
+            redirect('admin/master/jadwal');
+        }
+        
+        echo json_encode(['error' => 'Invalid request']);
+    }
+    
+    public function jadwal_delete($id) {
+        if ($this->Jadwal_model->delete($id)) {
+            $this->session->set_flashdata('success', 'Jadwal pelajaran berhasil dihapus');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menghapus jadwal pelajaran');
+        }
+        
+        redirect('admin/master/jadwal');
+    }
+    
+    public function jadwal_get($id) {
+        $jadwal = $this->Jadwal_model->get_by_id($id);
+        echo json_encode($jadwal);
     }
 }
