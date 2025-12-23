@@ -1,0 +1,22 @@
+{
+  "name": "absen-rfid-new",
+  "version": "1.0.0",
+  "description": "RFID Attendance System using CodeIgniter 3 and Tailwind CSS",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --watch",
+    "build": "npx tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --minify"
+  },
+  "keywords": [
+    "rfid",
+    "attendance",
+    "codeigniter",
+    "tailwindcss"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.7"
+  }
+}
